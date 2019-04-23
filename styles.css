@@ -1,0 +1,115 @@
+.card-pile {
+    border: 1px solid black;
+    /*height: 150px;*/
+    width: 100px;
+    margin: 0 10px;
+    max-height: 400px;
+    position: relative;
+}
+
+.dealable-cards-container {
+    display: flex;
+}
+
+.top-container {
+    display: flex;
+    justify-content: space-between;
+    height: 150px;
+    position: relative;
+}
+
+.ace-container {
+    display: flex;
+}
+
+.dealt-cards-container {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 100px;
+}
+
+.card {
+    height: 150px;
+    width: 100px;
+    border: 1px solid blue;
+    /*top: -100px;*/
+    background-color: orange;
+    overflow: hidden;
+    flex: 0 1 30px;
+}
+
+.card::after {
+    content: '';
+    background-color:red;
+    height: 100%;
+    width: 100%;
+    display: block;
+    position: relative;
+    top: -20px;
+}
+
+.visible {
+    border-color: green;
+    background-color: orange;
+    flex: 0 1 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.visible::after {
+    background-color: transparent;
+    z-index: 1;
+    position: relative;
+}
+
+.unflipped-cards {
+    /*margin-top: 100px;*/
+    /*overflow: hidden;*/
+    /*height: 150px;*/
+
+}
+
+.unflipped-cards > .card,
+.flipped-cards > .card {
+    position: absolute;
+}
+
+.flipped-cards > .card::after,
+.ace-pile > .card::after {
+    background: transparent;
+}
+
+.dealt-pile {
+    height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dealt-pile > .card:last-child:after {
+    background-color: transparent;
+    z-index: 1;
+    position: relative;
+}
+
+.dealt-pile > .card:last-child {
+    /*border-color: green;*/
+    /*background-color: orange;*/
+    flex: 0 1 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.selected {
+    border: 3px solid yellow;
+}
+
+.spades,
+.clubs {
+    background-color: rgb(202, 202, 202);
+}
+
+.heart,
+.diamond {
+    background-color: pink;
+}
