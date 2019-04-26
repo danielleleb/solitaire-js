@@ -76,15 +76,31 @@ const createCard = (number, suit, parent) => {
 
 const clearSelected = () => {
     let selected = document.querySelectorAll('.selected');
-    for (let i = 0; i <selected.length; i++) {
-        selected.classList.remove('selected')
-    }
+    // if (selected.length) {
+        for (let i = 0; i <selected.length; i++) {
+            selected[i].classList.remove('selected')
+        }
+    // }
     selectedCard = [];
 };
 
-const selectCard = () => {
+const selectCard = (cards, parent) => {
+    clearSelected();
+    if (!Array.isArray(cards)) {
+        cards = [cards];
 
-}
+    }
+    for (let i = 0; i < cards.length; i++) {
+        console.log(cards, cards[i])
+        let classList = cards[i].el.classList;
+       !classList.contains('selected') && classList.add('selected');
+        cards[i].parent = parent;
+        selectedCard.push(cards[i]);
+    }
+
+};
+
+
 
 shuffle(cards);
 
@@ -123,85 +139,141 @@ extraCardPile.addEventListener('click', (e) => {
     if (dealableCards.length) {
         let cardToFlip = dealableCards[dealableCards.length-1];
         flippedDealableCards.unshift(cardToFlip)
-        cardToFlip.visible = true;
+        // cardToFlip.visible = true;
         flippedCardContainerElement.appendChild(cardToFlip.el)
         dealableCards.pop();
     } else {
         // let flippedCards = flippedCardContainerElement.childNodes;
-        flippedDealableCards = flippedDealableCards.reverse();
+        // flippedDealableCards = flippedDealableCards.reverse();
         for (let i = 0; i < flippedDealableCards.length; i++) {
             extraCardPile.appendChild(flippedDealableCards[i].el);
         }
-        flippedCardContainerElement.innerHTML = '';
         dealableCards = flippedDealableCards;
         flippedDealableCards = [];
+        flippedCardContainerElement.innerHTML = '';
     }
 
 })
 
 flippedCardContainerElement.addEventListener('click', (e) => {
     if (e.target.classList.contains('card')) {
-        selectedCard = [];
-        flippedDealableCards[0].el.classList.add('selected')
-        flippedDealableCards[0].parent = flippedDealableCards;
-        selectedCard.push(flippedDealableCards[0]);
+        // selectedCard = [];
+        // flippedDealableCards[0].el.classList.add('selected')
+        // flippedDealableCards[0].parent = flippedDealableCards;
+        // selectedCard.push(flippedDealableCards[0]);
+        selectCard(flippedDealableCards[0], flippedDealableCards);
 
-    } else if (selectedCard.length >= 1) {
-        clearSelected();
-        // selectedCard.length = 0;
-        selectedCard.push(flippedDealableCards[0]);
     }
+    // else if (selectedCard.length >= 1) {
+    //     clearSelected();
+        // selectedCard.push(flippedDealableCards[0]);
+    // }
 });
 
 
 for (let i = 0; i < dealtPilesElements.length; i++) {
+    let currentPileObject = dealtPilesObjects[i];
+
     dealtPilesElements[i].addEventListener('click', e => {
-        let visibleCard = dealtPilesObjects[i][dealtPilesObjects[i].length -1];
+        let visibleCard = currentPileObject[currentPileObject.length -1];
+            // visibleCard && visibleCard.el.classList.add('visible');
+        // visibleCard.el.classList.add('visible');
 
         if (selectedCard.length) {
-            if (selectedCard[0].colour !== visibleCard.colour && selectedCard[0].number === (visibleCard.number - 1)) {
-                dealtPilesObjects[i].unshift(selectedCard[0]);
-                selectedCard[0].parent.splice(0, selectedCard.length)
-                selectedCard[0].el.classList.add('visible');
-                selectedCard[0].el.classList.remove('selected')
-                dealtPilesElements[i].appendChild(selectedCard[0].el);
-                selectedCard = [];
+            let selectedCardParent = selectedCard[0].parent
+            if ((!visibleCard) || (selectedCard[0].colour !== visibleCard.colour && selectedCard[0].number === (visibleCard.number - 1))){
+                selectedCardParent.splice(selectedCardParent.length- selectedCard.length, selectedCard.length)
+                selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                for (let j = 0; j < selectedCard.length; j++) {
+                    // selectedCard[j].el.classList.add('visible');
+                    currentPileObject.push(selectedCard[j]);
 
+                    selectedCard[j].el.classList.remove('selected')
+                    selectedCard[j].el.classList.add('visible')
+
+                    dealtPilesElements[i].appendChild(selectedCard[j].el);
+                }
+
+                clearSelected();
+            } else {
+                clearSelected();
             }
         } else {
-            clearSelected();
+            let visibleCards = [];
+            // let index = dealtPilesObjects[i].indexOf(visibleCard)
+            for (let j = 0; j < currentPileObject.length; j++) {
+                console.log(currentPileObject[j].el)
+                let classList = currentPileObject[j].el.classList;
+                if (classList.contains('selected')) {
+                    visibleCards.push(currentPileObject[j]);
+                }
+            }
+
+            selectCard(visibleCards, currentPileObject);
             // selectedCard = [];
-            // visibleCard.parent = dealtPilesObjects[i];
+            // visibleCard.parent = currentPileObject;
             // visibleCard.el.classList.add('selected')
             // selectedCard.push(visibleCard);
         }
-    })
+    });
+
+    dealtPilesElements[i].addEventListener('mouseover', e => {
+        if (selectedCard.length === 0) {
+            if (e.target.classList.contains('visible')) {
+                e.target.classList.add('selected')
+                // if (e.target.nextSibling) {
+                //     let nextCard = e.target.nextSibling;
+                //     nextCard.classList.contains('visible') && nextCard.classList.add('selected')
+                // }
+            }
+        }
+
+    });
+
+    dealtPilesElements[i].addEventListener('mouseleave', e => {
+        if (selectedCard.length === 0) {
+            for (let j = 0; j <currentPileObject.length; j++) {
+                if (currentPileObject[j].el && currentPileObject[j].el.classList.contains('selected')) {
+                    currentPileObject[j].el.classList.remove('selected')
+                }
+            }
+        }
+
+    });
 }
 
 
 const acePilesElements = document.querySelectorAll('.ace-pile');
 let acePilesObjects = [[], [], [], []];
 for (let i = 0; i <acePilesElements.length; i++) {
-    acePilesElements[i].addEventListener('click', e => {
-        // let acePile = acePilesElements[i];
+    let currentPileElements = acePilesElements[i];
+    let currentPileObjects = acePilesObjects[i];
+
+    currentPileElements.addEventListener('click', e => {
+        // let acePile = currentPileElements;
         if (selectedCard.length) {
+            let selectedCardParent = selectedCard[0].parent;
             if (e.target.classList.contains('card')) {
-                    visibleCard = acePilesObjects[i]
-                console.log(visibleCard)
-                if (visibleCard.suit === selectedCard[0].suit && visibleCard.number === (selectedCard[0].number -1)) {
-                    acePilesElements[i].appendChild(selectedCard[0].el);
-                    acePilesObjects[i].push(selectedCard[0]);
-                    selectedCard[0].parent.splice(0, selectedCard.length);
+                    visibleCard = currentPileObjects[currentPileObjects.length - 1]
+                if (selectedCard.length === 1 && visibleCard.suit === selectedCard[0].suit && visibleCard.number === (selectedCard[0].number -1)) {
+                    currentPileElements.appendChild(selectedCard[0].el);
+                    currentPileObjects.push(selectedCard[0]);
+                    selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
+                    selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
                     selectedCard[0].el.classList.remove('selected')
+                    selectedCard[0].el.classList.remove('visible')
                     selectedCard = [];
                 }
             } else if (!e.target.classList.contains('card') && selectedCard[0].number === 1) {
-                console.log('good')
-                acePilesElements[i].appendChild(selectedCard[0].el);
-                acePilesObjects[i].push(selectedCard[0]);
-                selectedCard[0].parent.splice(0, selectedCard.length);
-                selectedCard[0].el.classList.remove('selected')
-                selectedCard = [];
+                currentPileElements.appendChild(selectedCard[0].el);
+                currentPileObjects.push(selectedCard[0]);
+                selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
+                selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                selectedCard[0].el.classList.remove('selected');
+                selectedCard[0].el.classList.remove('visible');
+                clearSelected();
+            } else {
+                clearSelected();
             }
             // if (selectedCard[0].colour !== visibleCard.colour && selectedCard[0].number === (visibleCard.number - 1)) {
             //     dealtPilesObjects[i].unshift(selectedCard[0]);
@@ -215,3 +287,8 @@ for (let i = 0; i <acePilesElements.length; i++) {
         }
     })
 }
+
+// let visibleCards = document.querySelectorAll('visible');
+// for (let i = 0; i <visibleCards.length; i++) {
+//     visibleCards[i].add
+// }

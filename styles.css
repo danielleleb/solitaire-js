@@ -70,7 +70,8 @@
 }
 
 .unflipped-cards > .card,
-.flipped-cards > .card {
+.flipped-cards > .card,
+.ace-pile > .card {
     position: absolute;
 }
 
@@ -86,11 +87,11 @@
     flex-direction: column;
 }
 
-.dealt-pile > .card:last-child:after {
-    background-color: transparent;
-    z-index: 1;
-    position: relative;
-}
+/*.dealt-pile > .card:last-child:after {*/
+    /*background-color: transparent;*/
+    /*z-index: 1;*/
+    /*position: relative;*/
+/*}*/
 
 .dealt-pile > .card:last-child {
     /*border-color: green;*/
