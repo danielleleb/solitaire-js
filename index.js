@@ -161,6 +161,7 @@ flippedCardContainerElement.addEventListener('click', (e) => {
         // flippedDealableCards[0].el.classList.add('selected')
         // flippedDealableCards[0].parent = flippedDealableCards;
         // selectedCard.push(flippedDealableCards[0]);
+        console.log(flippedDealableCards[0])
         selectCard(flippedDealableCards[0], flippedDealableCards);
 
     }
@@ -182,8 +183,12 @@ for (let i = 0; i < dealtPilesElements.length; i++) {
         if (selectedCard.length) {
             let selectedCardParent = selectedCard[0].parent
             if ((!visibleCard) || (selectedCard[0].colour !== visibleCard.colour && selectedCard[0].number === (visibleCard.number - 1))){
-                selectedCardParent.splice(selectedCardParent.length- selectedCard.length, selectedCard.length)
-                selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                if (selectedCardParent !== flippedDealableCards) {
+                    selectedCardParent.splice(selectedCardParent.length- selectedCard.length, selectedCard.length)
+                    selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                } else {
+                    selectedCardParent = selectedCardParent.shift();
+                }
                 for (let j = 0; j < selectedCard.length; j++) {
                     // selectedCard[j].el.classList.add('visible');
                     currentPileObject.push(selectedCard[j]);
@@ -251,15 +256,20 @@ for (let i = 0; i <acePilesElements.length; i++) {
 
     currentPileElements.addEventListener('click', e => {
         // let acePile = currentPileElements;
-        if (selectedCard.length) {
+        if (selectedCard.length === 1) {
             let selectedCardParent = selectedCard[0].parent;
             if (e.target.classList.contains('card')) {
                     visibleCard = currentPileObjects[currentPileObjects.length - 1]
                 if (selectedCard.length === 1 && visibleCard.suit === selectedCard[0].suit && visibleCard.number === (selectedCard[0].number -1)) {
                     currentPileElements.appendChild(selectedCard[0].el);
                     currentPileObjects.push(selectedCard[0]);
-                    selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
-                    selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                    if (selectedCardParent !== flippedDealableCards) {
+                        selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
+                        selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                    }else {
+                        selectedCardParent = selectedCardParent.shift();
+                    }
+                    // selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
                     selectedCard[0].el.classList.remove('selected')
                     selectedCard[0].el.classList.remove('visible')
                     selectedCard = [];
@@ -267,8 +277,12 @@ for (let i = 0; i <acePilesElements.length; i++) {
             } else if (!e.target.classList.contains('card') && selectedCard[0].number === 1) {
                 currentPileElements.appendChild(selectedCard[0].el);
                 currentPileObjects.push(selectedCard[0]);
-                selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
-                selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                if (selectedCardParent !== flippedDealableCards) {
+                    selectedCard[0].parent.splice(selectedCardParent.length-1, 1);
+                    selectedCardParent[selectedCardParent.length - 1] && selectedCardParent[selectedCardParent.length - 1].el.classList.add('visible')
+                }else {
+                    selectedCardParent = selectedCardParent.shift();
+                }
                 selectedCard[0].el.classList.remove('selected');
                 selectedCard[0].el.classList.remove('visible');
                 clearSelected();
